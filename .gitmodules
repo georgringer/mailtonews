@@ -1,0 +1,3 @@
+[submodule "Resources/Private/Php/php-imap"]
+	path = Resources/Private/Php/php-imap
+	url = https://github.com/barbushin/php-imap.git

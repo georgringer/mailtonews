@@ -1,0 +1,33 @@
+plugin.tx_mailtonews {
+	settings {
+		mode {
+			gmail {
+				username =
+				password =
+				host = {imap.gmail.com:993/imap/ssl}INBOX
+
+				configuration {
+					importClass = GeorgRinger\Mailtonews\Service\Import\BasicImport
+
+					# see php.net/imap_search 2nd argument
+					searchCriteria = UNSEEN
+
+					defaultValues {
+						pid = 3
+						hidden = 0
+					}
+
+					imagesAsContentElement = 1
+					imagesAsContentElement {
+					}
+
+				}
+			}
+		}
+
+	}
+
+}
+
+# This is required for having settings available in CLI
+module.tx_mailtonews < plugin.tx_mailtonews
