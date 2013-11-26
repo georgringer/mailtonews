@@ -151,13 +151,19 @@ class BasicImport implements ImportInterface {
 		// Save sys_file_references and update content element accordingly
 		$sysFileKeys = implode(',', array_keys($imageElements['sys_file_reference']));
 
-		$imageElements['tt_content'][$data['content_elements']] = array('image' => $sysFileKeys);
+		$imageElements['tt_content'][$data['content_elements']] = array(
+			'image' => $sysFileKeys,
+			'imagecols' => $this->getImageColByCount(count(array_keys($imageElements['sys_file_reference'])))
+		);
 		$dataHandler->start($imageElements, array());
 		$dataHandler->admin = 1;
 		$dataHandler->process_datamap();
 
 //			@todo how to return errors in errorlog
-		print_r($dataHandler->errorLog);
+		$error = ($dataHandler->errorLog);
+		if (!empty($error)) {
+			throw new \Exception('ERROR happend while inserting content element:' . $error);
+		}
 	}
 
 	/**
@@ -194,6 +200,23 @@ class BasicImport implements ImportInterface {
 			);
 		}
 		$data['related_files'] = $toBeImported;
+	}
+
+	/**
+	 * Get correct col count
+	 *
+	 * @param integer $count
+	 * @return int
+	 */
+	protected function getImageColByCount($count) {
+		$cols = $count;
+		if ($count == 5) {
+			$cols = 6;
+		} elseif($count > 6) {
+			$cols = 6;
+		}
+
+		return $cols;
 	}
 
 }
