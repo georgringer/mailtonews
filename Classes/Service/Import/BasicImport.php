@@ -49,7 +49,7 @@ class BasicImport implements ImportInterface {
 		$newsImportService = $smtpService->getObjectManager()->get('Tx_News_Domain_Service_NewsImportService');
 		$newsImportService->import($data);
 
-		$smtpService->getMailbox()->markMailAsUnread($mail->id);
+//		$smtpService->getMailbox()->markMailAsUnread($mail->id);
 	}
 
 
