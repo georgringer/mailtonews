@@ -86,7 +86,7 @@ class BasicImport implements ImportInterface {
 		foreach ($attachments as $attachment) {
 			/** @var \IncomingMailAttachment $attachment */
 			$fileInformation = pathinfo($attachment->name);
-			if (GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'], $fileInformation['extension'])) {
+			if (GeneralUtility::inList($GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'], strtolower($fileInformation['extension']))) {
 				$images[] = $attachment;
 			} else {
 				$relatedFiles[] = $attachment;
