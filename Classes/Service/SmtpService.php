@@ -69,9 +69,15 @@ class SmtpService {
 		if (!$importer instanceof ImportInterface) {
 			throw new \Exception(sprintf('The class "%s" must implement ImportInterface', $importerClass));
 		}
-
 		foreach ($mailsIds as $mailId) {
 			$mail = $this->mailbox->getMail($mailId, $this);
+
+			$skip = $this->isAmongAllowedEmailAddresses($mail->fromAddress, $this->configuration['allowedEmailAddresses']);
+			if ($skip) {
+				$this->mailbox->markMailAsImportant($mailId);
+				continue;
+			}
+
 			$importer->save($mail, $this);
 		}
 	}
@@ -94,6 +100,31 @@ class SmtpService {
 		GeneralUtility::requireOnce(ExtensionManagementUtility::extPath('mailtonews') . 'Resources/Private/Php/php-imap/src/ImapMailbox.php');
 		$this->mailbox = new \ImapMailbox($this->host, $this->username, $this->password, $this->tempDirectory);
 
+	}
+
+	/**
+	 * Returns TRUE if either no allowed email addresses are set
+	 * or the given address is among the allowed
+	 *
+	 * @param string $address
+	 * @param string $allowed
+	 * @return boolean
+	 */
+	protected function isAmongAllowedEmailAddresses($email, $allowed = NULL) {
+		$status = FALSE;
+
+		if (!is_string($allowed) || empty($allowed)) {
+			return TRUE;
+		}
+
+		// Remove all spaces
+		$allowed = str_replace(' ', '', $allowed);
+
+		if (GeneralUtility::inList($allowed, $email)) {
+			$status = TRUE;
+		}
+
+		return $status;
 	}
 
 	/**

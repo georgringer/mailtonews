@@ -7,7 +7,8 @@ plugin.tx_mailtonews {
 				host = {imap.gmail.com:993/imap/ssl}INBOX
 
 				configuration {
-					importClass = GeorgRinger\Mailtonews\Service\Import\BasicImport
+					importerClass = GeorgRinger\Mailtonews\Service\Import\BasicImport
+					allowedEmailAddresses =
 
 					# see php.net/imap_search 2nd argument
 					searchCriteria = UNSEEN
