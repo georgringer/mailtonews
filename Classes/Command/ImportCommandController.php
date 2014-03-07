@@ -5,7 +5,7 @@ namespace GeorgRinger\Mailtonews\Command;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Georg Ringer <typo3@ringerge.org>
+ *  (c) 2014 Georg Ringer <typo3@ringerge.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -58,7 +58,7 @@ class ImportCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 	 */
 	public function runCommand($mode) {
 		$this->settings = $this->configurationManager->getConfiguration(
-			\Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+			\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
 			'Mailtonews',
 			'');
 
@@ -75,13 +75,11 @@ class ImportCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 		$smtpService->setHost($config['host']);
 		$smtpService->setObjectManager($this->objectManager);
 
-		$out = $smtpService->import();
-
-		$this->outputLine($out);
+		$smtpService->import();
 
 		try {
 		} catch (\Exception $exception) {
-			$this->outputLine('An error occured' . PHP_EOL . '=> ' . $exception->getMessage());
+			$this->outputLine('An error occurred' . PHP_EOL . '=> ' . $exception->getMessage());
 		}
 
 	}
@@ -93,30 +91,29 @@ class ImportCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandC
 	 * @throws \Exception
 	 */
 	protected function getConfiguration($mode) {
-
 		if (!function_exists('imap_search')) {
-			throw new \Exception('The function "imap_search" does not exist. Please check if IMAP support is also available in CLI context!');
+			throw new \RuntimeException('The function "imap_search" does not exist. Please check if IMAP support is also available in CLI context!');
 		}
 
 		if (!is_array($this->settings)) {
-			throw new \Exception('Configuration ERROR: No TypoScript defined');
+			throw new \RuntimeException('Configuration ERROR: No TypoScript defined');
 		}
 		if (!is_array($this->settings['mode'])) {
-			throw new \Exception('Configuration ERROR:  No TypoScript node \'mode.\' defined!');
+			throw new \RuntimeException('Configuration ERROR:  No TypoScript node \'mode.\' defined!');
 		}
 		if (!is_array($this->settings['mode'][$mode])) {
-			throw new \Exception(sprintf('Configuration ERROR:  No TypoScript node for mode "%s" defined!', $mode));
+			throw new \RuntimeException(sprintf('Configuration ERROR:  No TypoScript node for mode "%s" defined!', $mode));
 		}
 
 		$configuration = $this->settings['mode'][$mode];
 		if (empty($configuration['username'])) {
-			throw new \Exception(sprintf('Configuration ERROR:  No username defined for mode "%s"!', $mode));
+			throw new \RuntimeException(sprintf('Configuration ERROR:  No username defined for mode "%s"!', $mode));
 		}
 		if (empty($configuration['password'])) {
-			throw new \Exception(sprintf('Configuration ERROR:  No password defined for mode "%s"!', $mode));
+			throw new \RuntimeException(sprintf('Configuration ERROR:  No password defined for mode "%s"!', $mode));
 		}
 		if (empty($configuration['host'])) {
-			throw new \Exception(sprintf('Configuration ERROR:  No host defined for mode "%s"!', $mode));
+			throw new \RuntimeException(sprintf('Configuration ERROR:  No host defined for mode "%s"!', $mode));
 		}
 
 		return $configuration;

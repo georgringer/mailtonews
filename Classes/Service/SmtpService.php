@@ -52,13 +52,18 @@ class SmtpService {
 	/** @var  \TYPO3\CMS\Extbase\Object\ObjectManagerInterface */
 	protected $objectManager;
 
+	/**
+	 * @return void
+	 * @throws \Exception
+	 */
 	public function import() {
 		$this->init();
 
 		$mailsIds = $this->mailbox->searchMailBox($this->configuration['searchCriteria']);
 		if (!$mailsIds) {
-			return 'Mailbox is empty';
+			return;
 		}
+
 		$importerClass = 'GeorgRinger\\Mailtonews\\Service\\Import\\BasicImport';
 		if (isset($this->configuration['importerClass'])) {
 			$importerClass = $this->configuration['importerClass'];
@@ -106,7 +111,7 @@ class SmtpService {
 	 * Returns TRUE if either no allowed email addresses are set
 	 * or the given address is among the allowed
 	 *
-	 * @param string $address
+	 * @param string $email
 	 * @param string $allowed
 	 * @return boolean
 	 */

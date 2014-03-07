@@ -1,11 +1,11 @@
 <?php
 
-namespace GeorgRinger\Mailtonews\Service;
+namespace GeorgRinger\Mailtonews\Tests\Unit\Service;
 
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Georg Ringer <typo3@ringerge.org>
+ *  (c) 2014 Georg Ringer <typo3@ringerge.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is

@@ -49,7 +49,7 @@ class BasicImport implements ImportInterface {
 		$newsImportService = $smtpService->getObjectManager()->get('Tx_News_Domain_Service_NewsImportService');
 		$newsImportService->import($data);
 
-//		$smtpService->getMailbox()->markMailAsUnread($mail->id);
+		$smtpService->getMailbox()->markMailAsUnread($mail->id);
 	}
 
 
@@ -159,10 +159,10 @@ class BasicImport implements ImportInterface {
 		$dataHandler->admin = 1;
 		$dataHandler->process_datamap();
 
-//			@todo how to return errors in errorlog
+//			@todo how to return errors in error log
 		$error = ($dataHandler->errorLog);
 		if (!empty($error)) {
-			throw new \Exception('ERROR happend while inserting content element:' . $error);
+			throw new \Exception('ERROR occurred while inserting content element:' . $error);
 		}
 	}
 
