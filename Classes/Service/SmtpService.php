@@ -77,8 +77,8 @@ class SmtpService {
 		foreach ($mailsIds as $mailId) {
 			$mail = $this->mailbox->getMail($mailId, $this);
 
-			$skip = $this->isAmongAllowedEmailAddresses($mail->fromAddress, $this->configuration['allowedEmailAddresses']);
-			if ($skip) {
+			$allowed = $this->isAmongAllowedEmailAddresses($mail->fromAddress, $this->configuration['allowedEmailAddresses']);
+			if (!$allowed) {
 				$this->mailbox->markMailAsImportant($mailId);
 				continue;
 			}
