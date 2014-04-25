@@ -87,7 +87,6 @@ class SmtpService {
 
 			if (!empty($this->configuration['deleteMailAfterImport'])) {
 				$this->mailbox->deleteMail($mailId);
-				echo 'deleted';
 			}
 		}
 	}
