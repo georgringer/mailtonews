@@ -18,6 +18,8 @@ plugin.tx_mailtonews {
 						hidden = 0
 					}
 
+					deleteMailAfterImport =
+
 					imagesAsContentElement = 1
 					imagesAsContentElement {
 					}

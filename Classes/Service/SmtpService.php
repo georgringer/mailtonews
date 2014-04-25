@@ -84,6 +84,11 @@ class SmtpService {
 			}
 
 			$importer->save($mail, $this);
+
+			if (!empty($this->configuration['deleteMailAfterImport'])) {
+				$this->mailbox->deleteMail($mailId);
+				echo 'deleted';
+			}
 		}
 	}
 

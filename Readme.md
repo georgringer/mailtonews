@@ -31,6 +31,8 @@ gmail {
 			hidden = 0
 		}
 
+		deleteMailAfterImport =
+
 		imagesAsContentElement = 1
 		imagesAsContentElement {
 		}
