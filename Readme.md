@@ -33,6 +33,12 @@ gmail {
 
 		deleteMailAfterImport =
 
+		notifications {
+			onFailure = 1
+			onSuccess =
+			recipient =
+		}
+
 		imagesAsContentElement = 1
 		imagesAsContentElement {
 		}
