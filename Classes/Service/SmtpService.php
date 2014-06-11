@@ -79,10 +79,16 @@ class SmtpService {
 
 			if (!$importer->isAllowed($mail, $this)) {
 				$this->mailbox->markMailAsImportant($mailId);
+				if (!empty($this->configuration['notifications']['onFailure'])) {
+					$this->sendNotification($mail, 'Mail not allowed');
+				}
 				continue;
 			}
 
 			$importer->save($mail, $this);
+			if (!empty($this->configuration['notifications']['onSuccess'])) {
+				$this->sendNotification($mail, 'Mail received');
+			}
 
 			if (!empty($this->configuration['deleteMailAfterImport'])) {
 				$this->mailbox->deleteMail($mailId);
@@ -173,5 +179,41 @@ class SmtpService {
 		return $this->objectManager;
 	}
 
+	/**
+	 * String send notification
+	 *
+	 * @param \IncomingMail $mail
+	 * @param string $message
+	 */
+	protected function sendNotification(\IncomingMail $mail, $message) {
+
+		if (!empty($this->configuration['notifications']['recipient'])) {
+
+			/** @var $mailer \TYPO3\CMS\Core\Mail\MailMessage */
+			$mailer = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+			$mailer->setTo($this->configuration['notifications']['recipient'])
+				->setSubject($message);
+
+			// set default sender
+			if (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
+				if ($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']) {
+					$mailer->setFrom(
+						$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'],
+						$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']
+					);
+				} else {
+					$mailer->setFrom($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
+				}
+			}
+
+			$emailBody = 'subject: ' . htmlspecialchars($mail->subject) . PHP_EOL;
+			$emailBody .= 'from: ' . htmlspecialchars($mail->fromName . ' [' . $mail->fromAddress . ']') . PHP_EOL;
+
+			// HTML Email
+			$mailer->setBody($emailBody, 'text/plain');
+
+			$mailer->send();
+		}
+	}
 
 }
