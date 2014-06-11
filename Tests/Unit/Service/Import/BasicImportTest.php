@@ -54,6 +54,28 @@ class BasicImportTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 			'10col' => array(10, 6),
 		);
 	}
+
+	/**
+	 * @test
+	 * @dataProvider isAmongAllowedEmailAddressesDataProvider
+	 */
+	public function isAmongAllowedEmailAddresses($given, $expected) {
+		$basicImport = $this->getAccessibleMock('GeorgRinger\\Mailtonews\\Service\\Import\\BasicImport', array('dummy'));
+
+		$result = $basicImport->_call('isAmongAllowedEmailAddresses', $given[0], $given[1]);
+
+		$this->assertEquals($result, $expected);
+	}
+
+	public function isAmongAllowedEmailAddressesDataProvider() {
+		return array(
+			'allowedAsNull' => array(array('fo@bar.com'), TRUE),
+			'allowedAsEmptyString' => array(array('fo@bar.com', ''), TRUE),
+			'emailAddressAmongGiven' => array(array('fo@bar.com', 'lorem@ipsum.com,fo@bar.com,test@dummy.local'), TRUE),
+			'emailAddressAmongGivenWithBlanks' => array(array('fo@bar.com', 'lorem@ipsum.com, fo@bar.com , test@dummy.local'), TRUE),
+			'emailAddressNotAmongGiven' => array(array('fo@bar.com', 'lorem@ipsum.com, foxy@bar.com , test@dummy.local'), FALSE),
+		);
+	}
 }
 
 ?>

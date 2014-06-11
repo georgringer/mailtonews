@@ -34,6 +34,22 @@ namespace GeorgRinger\Mailtonews\Service\Import;
  * @author Georg Ringer <typo3@ringerge.org>
  */
 interface ImportInterface {
-	public function save(\IncomingMail $mail, \GeorgRinger\Mailtonews\Service\SmtpService $smtpService);
 
+	/**
+	 * Check if mail is allowed
+	 *
+	 * @param \IncomingMail $mail
+	 * @param \GeorgRinger\Mailtonews\Service\SmtpService $smtpService
+	 * @return bool
+	 */
+	public function isAllowed(\IncomingMail $mail, \GeorgRinger\Mailtonews\Service\SmtpService $smtpService);
+
+	/**
+	 * Save mail
+	 *
+	 * @param \IncomingMail $mail
+	 * @param \GeorgRinger\Mailtonews\Service\SmtpService $smtpService
+	 * @return void
+	 */
+	public function save(\IncomingMail $mail, \GeorgRinger\Mailtonews\Service\SmtpService $smtpService);
 }

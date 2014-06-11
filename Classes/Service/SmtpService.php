@@ -77,8 +77,7 @@ class SmtpService {
 		foreach ($mailsIds as $mailId) {
 			$mail = $this->mailbox->getMail($mailId, $this);
 
-			$allowed = $this->isAmongAllowedEmailAddresses($mail->fromAddress, $this->configuration['allowedEmailAddresses']);
-			if (!$allowed) {
+			if (!$importer->isAllowed($mail, $this)) {
 				$this->mailbox->markMailAsImportant($mailId);
 				continue;
 			}
@@ -109,31 +108,6 @@ class SmtpService {
 		GeneralUtility::requireOnce(ExtensionManagementUtility::extPath('mailtonews') . 'Resources/Private/Php/php-imap/src/ImapMailbox.php');
 		$this->mailbox = new \ImapMailbox($this->host, $this->username, $this->password, $this->tempDirectory);
 
-	}
-
-	/**
-	 * Returns TRUE if either no allowed email addresses are set
-	 * or the given address is among the allowed
-	 *
-	 * @param string $email
-	 * @param string $allowed
-	 * @return boolean
-	 */
-	protected function isAmongAllowedEmailAddresses($email, $allowed = NULL) {
-		$status = FALSE;
-
-		if (!is_string($allowed) || empty($allowed)) {
-			return TRUE;
-		}
-
-		// Remove all spaces
-		$allowed = str_replace(' ', '', $allowed);
-
-		if (GeneralUtility::inList($allowed, $email)) {
-			$status = TRUE;
-		}
-
-		return $status;
 	}
 
 	/**
