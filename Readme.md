@@ -60,5 +60,5 @@ The mode is the same as the one in the configuration which makes it possible to 
 
 ## FAQ ##
 
-- Images/files are not added
-  Make sure the cli/scheduler user has enough rights to access the news import folder in the file list. (see also ext:news settings in extension manager)
+**Images/files are not added**
+Make sure the cli/scheduler user has enough rights to access the news import folder in the file list. (see also ext:news settings in extension manager)
