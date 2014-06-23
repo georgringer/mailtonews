@@ -56,3 +56,9 @@ Use CLI (backend user _cli_lowlevel is needed) by calling
 ```
 
 The mode is the same as the one in the configuration which makes it possible to handle multiple imports.
+
+
+## FAQ ##
+
+- Images/files are not added
+  Make sure the cli/scheduler user has enough rights to access the news import folder in the file list. (see also ext:news settings in extension manager)
