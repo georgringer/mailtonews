@@ -38,9 +38,29 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class BasicImport implements ImportInterface {
 
-	/** @var  \GeorgRinger\Mailtonews\Service\SmtpService */
+	/**
+	 * @var \GeorgRinger\Mailtonews\Service\SmtpService
+	 */
 	protected $smtpService;
 
+	/**
+	 * Check if incoming mail is allowed
+	 *
+	 * @param \IncomingMail $mail
+	 * @param \GeorgRinger\Mailtonews\Service\SmtpService $smtpService
+	 * @return bool
+	 */
+	public function isAllowed(\IncomingMail $mail, \GeorgRinger\Mailtonews\Service\SmtpService $smtpService) {
+		$configuration = $this->smtpService->getConfiguration();
+		return $this->isAmongAllowedEmailAddresses($mail->fromAddress, $configuration['allowedEmailAddresses'] ?: NULL);
+	}
+
+	/**
+	 * Save mail
+	 *
+	 * @param \IncomingMail $mail
+	 * @param \GeorgRinger\Mailtonews\Service\SmtpService $smtpService
+	 */
 	public function save(\IncomingMail $mail, \GeorgRinger\Mailtonews\Service\SmtpService $smtpService) {
 		$this->smtpService = $smtpService;
 		$data = array($this->extractDataFromMail($mail));
@@ -55,6 +75,7 @@ class BasicImport implements ImportInterface {
 
 	/**
 	 * Get all needed data out of the mail
+	 *
 	 * @param \IncomingMail $mail
 	 * @return array
 	 */
@@ -103,6 +124,13 @@ class BasicImport implements ImportInterface {
 		return $data;
 	}
 
+	/**
+	 * Handle images as content element
+	 *
+	 * @param array $attachments
+	 * @param array $data
+	 * @throws \Exception
+	 */
 	protected function handleImagesAsContentElement(array $attachments, array &$data) {
 		if (count($attachments) == 0) {
 			return;
@@ -219,4 +247,29 @@ class BasicImport implements ImportInterface {
 		return $cols;
 	}
 
+
+	/**
+	 * Returns TRUE if either no allowed email addresses are set
+	 * or the given address is among the allowed
+	 *
+	 * @param string $email
+	 * @param string $allowed
+	 * @return boolean
+	 */
+	protected function isAmongAllowedEmailAddresses($email, $allowed = NULL) {
+		$status = FALSE;
+
+		if (!is_string($allowed) || empty($allowed)) {
+			return TRUE;
+		}
+
+		// Remove all spaces
+		$allowed = str_replace(' ', '', $allowed);
+
+		if (GeneralUtility::inList($allowed, $email)) {
+			$status = TRUE;
+		}
+
+		return $status;
+	}
 }

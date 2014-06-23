@@ -77,13 +77,18 @@ class SmtpService {
 		foreach ($mailsIds as $mailId) {
 			$mail = $this->mailbox->getMail($mailId, $this);
 
-			$allowed = $this->isAmongAllowedEmailAddresses($mail->fromAddress, $this->configuration['allowedEmailAddresses']);
-			if (!$allowed) {
+			if (!$importer->isAllowed($mail, $this)) {
 				$this->mailbox->markMailAsImportant($mailId);
+				if (!empty($this->configuration['notifications']['onFailure'])) {
+					$this->sendNotification($mail, 'Mail not allowed');
+				}
 				continue;
 			}
 
 			$importer->save($mail, $this);
+			if (!empty($this->configuration['notifications']['onSuccess'])) {
+				$this->sendNotification($mail, 'Mail received');
+			}
 
 			if (!empty($this->configuration['deleteMailAfterImport'])) {
 				$this->mailbox->deleteMail($mailId);
@@ -109,31 +114,6 @@ class SmtpService {
 		GeneralUtility::requireOnce(ExtensionManagementUtility::extPath('mailtonews') . 'Resources/Private/Php/php-imap/src/ImapMailbox.php');
 		$this->mailbox = new \ImapMailbox($this->host, $this->username, $this->password, $this->tempDirectory);
 
-	}
-
-	/**
-	 * Returns TRUE if either no allowed email addresses are set
-	 * or the given address is among the allowed
-	 *
-	 * @param string $email
-	 * @param string $allowed
-	 * @return boolean
-	 */
-	protected function isAmongAllowedEmailAddresses($email, $allowed = NULL) {
-		$status = FALSE;
-
-		if (!is_string($allowed) || empty($allowed)) {
-			return TRUE;
-		}
-
-		// Remove all spaces
-		$allowed = str_replace(' ', '', $allowed);
-
-		if (GeneralUtility::inList($allowed, $email)) {
-			$status = TRUE;
-		}
-
-		return $status;
 	}
 
 	/**
@@ -199,5 +179,41 @@ class SmtpService {
 		return $this->objectManager;
 	}
 
+	/**
+	 * String send notification
+	 *
+	 * @param \IncomingMail $mail
+	 * @param string $message
+	 */
+	protected function sendNotification(\IncomingMail $mail, $message) {
+
+		if (!empty($this->configuration['notifications']['recipient'])) {
+
+			/** @var $mailer \TYPO3\CMS\Core\Mail\MailMessage */
+			$mailer = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+			$mailer->setTo($this->configuration['notifications']['recipient'])
+				->setSubject($message);
+
+			// set default sender
+			if (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
+				if ($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']) {
+					$mailer->setFrom(
+						$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'],
+						$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']
+					);
+				} else {
+					$mailer->setFrom($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']);
+				}
+			}
+
+			$emailBody = 'subject: ' . htmlspecialchars($mail->subject) . PHP_EOL;
+			$emailBody .= 'from: ' . htmlspecialchars($mail->fromName . ' [' . $mail->fromAddress . ']') . PHP_EOL;
+
+			// HTML Email
+			$mailer->setBody($emailBody, 'text/plain');
+
+			$mailer->send();
+		}
+	}
 
 }
