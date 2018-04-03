@@ -28,6 +28,7 @@ namespace GeorgRinger\Mailtonews\Service\Import;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use GeorgRinger\News\Domain\Service\NewsImportService;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -65,8 +66,8 @@ class BasicImport implements ImportInterface {
 		$this->smtpService = $smtpService;
 		$data = array($this->extractDataFromMail($mail));
 
-		/** @var \Tx_News_Domain_Service_NewsImportService $newsImportService */
-		$newsImportService = $smtpService->getObjectManager()->get('Tx_News_Domain_Service_NewsImportService');
+		/** @var NewsImportService $newsImportService */
+		$newsImportService = $smtpService->getObjectManager()->get(NewsImportService::class);
 		$newsImportService->import($data);
 
 		$smtpService->getMailbox()->markMailAsUnread($mail->id);
