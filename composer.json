@@ -1,0 +1,21 @@
+{
+	"name": "georgringer/mailtonews",
+	"type": "typo3-cms-extension",
+	"description": "Most simple way to write news entries, by just sending a mail to a specific email address",
+	"license": ["GPL-2.0+"],
+	"support": {
+		"issues": "https://github.com/pixelant/mailtonews"
+	},
+	"version": "2.2.1",
+	"replace": {
+		"go_maps_ext": "*"
+	},
+	"require": {
+		"typo3/cms-core": "6.0.0 - 8.9.99"
+	},
+	"autoload": {
+		"psr-4": {
+			"GeorgRinger\\Mailtonews\\": "Classes/"
+		}
+	}
+}
