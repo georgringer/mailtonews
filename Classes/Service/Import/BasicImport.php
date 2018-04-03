@@ -51,7 +51,7 @@ class BasicImport implements ImportInterface {
 	 * @return bool
 	 */
 	public function isAllowed(\IncomingMail $mail, \GeorgRinger\Mailtonews\Service\SmtpService $smtpService) {
-		$configuration = $this->smtpService->getConfiguration();
+		$configuration = $smtpService->getConfiguration();
 		return $this->isAmongAllowedEmailAddresses($mail->fromAddress, $configuration['allowedEmailAddresses'] ?: NULL);
 	}
 
